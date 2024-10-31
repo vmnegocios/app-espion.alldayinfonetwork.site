@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EspionApp - Localisation</title>
+    
+    <!-- Link para a biblioteca de ícones Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+	
+	<!-- Leaflet CSS e JS para exibir o OpenStreetMap -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1c1c1c;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: filter 0.3s ease;
+        }
+
+        /* Cabeçalho */
+        .header {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #333;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .header img {
+            height: 40px;
+        }
+
+        /* Container principal */
+        .main-container {
+            width: 90%;
+            max-width: 600px;
+            border: 2px solid #FF0000;
+            background-color: #000000;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+
+        /* Ícone de Localização */
+        .location-icon {
+            font-size: 50px;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        /* Barra de progresso */
+        .progress-bar-container {
+            width: 100%;
+            background-color: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+
+        .progress-text {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        /* Estilos para as etapas */
+        .steps {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+            opacity: 0; /* Inicialmente invisível */
+            transition: opacity 0.3s ease;
+        }
+
+        .step i {
+            color: #4CAF50;
+            margin-right: 10px;
+        }
+
+        .last-step i {
+            color: #FF0000; /* Cor vermelha para o ícone de erro */
+        }
+
+        /* Estilo para o campo de endereço e botão */
+        .address-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .address-container input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .address-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* Mensagem piscante de análise */
+        .analyzing-message {
+            color: #FF0000;
+            font-size: 16px;
+            margin-top: 20px;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Iframe do Google Maps */
+        .maps-container {
+            margin-top: 20px;
+            width: 100%;
+            height: 300px;
+            border: none;
+            border-radius: 8px;
+        }
+
+        /* Mensagem de margem de erro */
+        .error-margin-message {
+            margin-top: 10px;
+            color: #FF5555;
+            font-size: 12px;
+            text-align: center;
+        }
+		/* Mapa OpenStreetMap */
+        .maps-container {
+            margin-top: 20px;
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cabeçalho com SORTIR e logo -->
+    <div class="header">
+        <a onclick="goToHomePage()"><i class="fas fa-arrow-left"></i> SORTIR</a>
+        <img src="../images/logo.jpg" alt="Logo EspionApp">
+    </div>
+
+    <!-- Container principal -->
+    <div class="main-container">
+        <div class="location-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <p>Entrez l'adresse exacte de la maison où habite le numéro espionné afin que nous puissions confirmer s'il est chez lui.</p>
+
+        <!-- Campo de endereço e botão -->
+        <div class="address-container">
+            <input type="text" id="addressInput" placeholder="Adresse exacte" required>
+            <button onclick="startProcess()">CONFIRMER</button>
+        </div>
+
+        <!-- Barra de progresso e etapas -->
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">0%</div>
+
+        <div class="steps">
+            <div class="step" id="step1"><i class="fas fa-check-circle"></i> Connexion au GPS</div>
+            <div class="step" id="step2"><i class="fas fa-check-circle"></i> Recherche de vulnérabilité</div>
+            <div class="step" id="step3"><i class="fas fa-check-circle"></i> Vulnérabilité trouvée</div>
+            <div class="step" id="step4"><i class="fas fa-check-circle"></i> Décryptage des informations</div>
+            <div class="step" id="step5"><i class="fas fa-check-circle"></i> Obtenir l'emplacement</div>
+            <div class="step last-step" id="step6"><i class="fas fa-times-circle"></i> utilisateur introuvable</div>
+        </div>
+
+        <!-- Mensagem de análise piscante -->
+        <div class="analyzing-message" id="analyzingMessage" style="display: none;">
+            Recherche d'un utilisateur dans un autre endroit...
+        </div>
+
+        <!-- OpenStreetMap container -->
+        <div id="mapsContainer" class="maps-container" style="display: none;"></div>
+        
+        <!-- Mensagem de margem de erro -->
+        <div class="error-margin-message" id="errorMarginMessage" style="display: none;">
+            L'application peut contenir une marge d'erreur en fonction de la connexion Internet.
+        </div>
+    </div>
+
+    <script>
+        // Função para redirecionar para a página inicial
+        function goToHomePage() {
+            window.location.href = "../index.html";
+        }
+
+        // Função para iniciar o processo após o usuário clicar em CONFIRMER
+        function startProcess() {
+            const address = document.getElementById("addressInput").value;
+            if (address) { // Verifica se o usuário preencheu o campo
+                startProgressBar(); // Inicia a barra de progresso e etapas
+            } else {
+                alert("Veuillez entrer une adresse valide.");
+            }
+        }
+
+        // Função para iniciar a barra de progresso e exibir as etapas
+        function startProgressBar() {
+            const progressBar = document.getElementById("progressBar");
+            const progressText = document.getElementById("progressText");
+            const steps = [
+                document.getElementById("step1"),
+                document.getElementById("step2"),
+                document.getElementById("step3"),
+                document.getElementById("step4"),
+                document.getElementById("step5"),
+                document.getElementById("step6")
+            ];
+            const stepAppearances = [2, 10, 25, 50, 85, 100]; // Momentos para cada etapa aparecer
+            const analyzingMessage = document.getElementById("analyzingMessage");
+
+            let progress = 0;
+            let currentStep = 0;
+
+            const interval = setInterval(() => {
+                if (progress >= 100) {
+                    clearInterval(interval);
+                } else {
+                    progress++;
+                    progressBar.style.width = progress + "%";
+                    progressText.innerText = progress + "%";
+
+                    // Mostrar a próxima etapa conforme a barra avança
+                    if (currentStep < steps.length && progress >= stepAppearances[currentStep]) {
+                        steps[currentStep].style.opacity = 1; // Torna a etapa visível
+                        currentStep++;
+
+                        // Exibe a mensagem de análise piscante após o último step
+                        if (currentStep === steps.length) {
+                            setTimeout(() => {
+                                analyzingMessage.style.display = "block";
+                                performRandomLocationSearch();
+                            }, 1500);
+                        }
+                    }
+                }
+            }, 620); // Ajuste de velocidade da barra de progresso
+        }
+
+        // Função para buscar um local aleatório usando Nominatim e exibir no mapa com Leaflet
+        function performRandomLocationSearch() {
+            const address = document.getElementById("addressInput").value;
+            const searchTerms = ["bars", "restaurants", "cafés", "parks", "tourist attractions"];
+            const randomSearch = searchTerms[Math.floor(Math.random() * searchTerms.length)];
+
+            // Faz a requisição ao Nominatim para geocodificação
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const { lat, lon } = data[0];
+                        
+                        // Configura o mapa com Leaflet
+                        const map = L.map('mapsContainer').setView([lat, lon], 13);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 19,
+                        }).addTo(map);
+
+                        // Busca local aleatório próximo
+                        const marker = L.marker([lat, lon]).addTo(map);
+                        marker.bindPopup(`Lieu où l'utilisateur peut se trouver`).openPopup();
+
+                        setTimeout(() => {
+                            analyzingMessage.style.display = "none"; // Remove a mensagem piscante
+                            document.getElementById("mapsContainer").style.display = "block";
+                            document.getElementById("errorMarginMessage").style.display = "block"; // Mostra a mensagem de margem de erro
+                        }, 10000); // Tempo aumentado para 10 segundos antes de mostrar o mapa e a mensagem
+                    } else {
+                        alert("Adresse non trouvée. Veuillez vérifier l'adresse et réessayer.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la recherche de l'adresse:", error);
+                    alert("Une erreur s'est produite lors de la recherche. Veuillez réessayer plus tard.");
+                });
+        }
+    </script>
+
+</body>
+</html>

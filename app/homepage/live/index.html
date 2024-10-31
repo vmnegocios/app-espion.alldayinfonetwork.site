@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EspionApp - Live</title>
+    
+    <!-- Link para a biblioteca de ícones Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1c1c1c;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: filter 0.3s ease;
+        }
+
+        /* Estilo para desfoque */
+        .blur {
+            filter: blur(5px);
+        }
+
+        /* Cabeçalho */
+        .header {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #333;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: filter 0.3s ease;
+        }
+        
+        .header a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .header img {
+            height: 40px;
+        }
+
+        /* Container principal */
+        .main-container {
+            width: 90%;
+            max-width: 600px;
+            border: 2px solid #FF0000;
+            background-color: #000000; /* Novo background */
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            border-radius: 8px;
+            transition: filter 0.3s ease;
+        }
+
+        /* Ícone Live */
+        .live-icon {
+            font-size: 50px;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+        }
+
+        /* Barra de progresso */
+        .progress-bar-container {
+            width: 100%;
+            background-color: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+
+        .progress-text {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        /* Estilo do pop-up de erro */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            color: #fff;
+            text-align: center;
+            z-index: 1000; /* Coloca o pop-up acima do desfoque */
+        }
+
+        .popup .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cabeçalho com SORTIR e logo -->
+    <div class="header" id="header">
+        <a onclick="goToHomePage()"><i class="fas fa-arrow-left"></i> SORTIR</a>
+        <img src="../images/logo.jpg" alt="Logo EspionApp">
+    </div>
+
+    <!-- Container principal -->
+    <div class="main-container" id="mainContainer">
+        <div class="live-icon"><i class="fas fa-video"></i></div>
+        <p>Le numéro est espionné</p>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">0%</div>
+    </div>
+
+    <!-- Pop-up de erro -->
+    <div class="popup" id="errorPopup">
+        <span class="close-btn" onclick="closePopup()">✖</span>
+        <p id="errorMessage"></p>
+    </div>
+
+    <script>
+        // Função para redirecionar para a página inicial
+        function goToHomePage() {
+            window.location.href = "../index.html";
+        }
+
+        // Função para exibir o pop-up de erro
+        function showErrorPopup() {
+            const errorMessages = [
+                "Erreur de connexion en direct, il y a un problème avec votre connexion Internet. Veuillez réessayer plus tard.",
+                "Vérifiez votre connexion Internet",
+                "La connexion Internet du numéro demandé est peut-être défectueuse.",
+                "Veuillez vous assurer que le numéro demandé est connecté à Internet.",
+                "L'application n'a pas pu se connecter en direct avec le numéro demandé."
+            ];
+            const randomMessage = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+            document.getElementById("errorMessage").innerText = randomMessage;
+            document.getElementById("errorPopup").style.display = "block";
+            document.getElementById("header").classList.add("blur"); // Aplica desfoque ao cabeçalho
+            document.getElementById("mainContainer").classList.add("blur"); // Aplica desfoque ao container principal
+        }
+
+        // Função para fechar o pop-up
+        function closePopup() {
+            document.getElementById("errorPopup").style.display = "none";
+            document.getElementById("header").classList.remove("blur"); // Remove desfoque do cabeçalho
+            document.getElementById("mainContainer").classList.remove("blur"); // Remove desfoque do container principal
+        }
+
+        // Função para iniciar a barra de progresso
+        function startProgressBar() {
+            const progressBar = document.getElementById("progressBar");
+            const progressText = document.getElementById("progressText");
+
+            let progress = 0;
+            const randomStopPoint = Math.floor(Math.random() * (96 - 12 + 1)) + 12; // Ponto de parada aleatório entre 12% e 96%
+
+            const interval = setInterval(() => {
+                if (progress >= randomStopPoint || progress >= 96) {
+                    clearInterval(interval);
+                    showErrorPopup();
+                } else {
+                    progress++;
+                    progressBar.style.width = progress + "%";
+                    progressText.innerText = progress + "%";
+                }
+            }, 250);
+        }
+
+        // Espera 0.5s antes de iniciar a barra de progresso
+        setTimeout(startProgressBar, 500);
+    </script>
+
+</body>
+</html>

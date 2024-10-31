@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EspionApp - Página Inicial</title>
+    
+    <!-- Link para a biblioteca de ícones Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1c1c1c;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .logo img {
+            height: 100px;
+			margin-bottom: 20px;
+        }
+
+        /* Contêiner principal */
+        .main-container {
+            width: 90%;
+            max-width: 500px;
+            background-color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Estilos dos indicadores de estatísticas */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background-color: #FF0000;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        /* Título */
+        .title {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        /* Campo de número */
+        .phone-input-container {
+            display: flex;
+            align-items: center;
+            background-color: #222;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .phone-input-container select,
+        .phone-input-container input {
+            background-color: #222;
+            color: #fff;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .phone-input-container select {
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        .phone-input-container input {
+            width: 100%;
+        }
+
+        /* Botão de pesquisa */
+        .search-button {
+            background-color: #4CAF50;
+            color: #fff;
+            font-size: 18px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .search-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Ícones de sistema operacional */
+        .os-icons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 15px;
+            color: #fff;
+        }
+
+        /* Rodapé */
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logo -->
+    <div class="logo">
+        <img src="images/logo.jpg" alt="Logo EspionApp">
+    </div>
+
+    <!-- Contêiner principal -->
+    <div class="main-container">
+        <!-- Indicadores de estatísticas -->
+        <div class="stats">
+            <div class="stat-item" id="activeUsers">2,568<br>Active users now</div>
+            <div class="stat-item" id="devicesSpied">1,239<br>Devices spied on today</div>
+        </div>
+
+        <!-- Título de entrada do número -->
+        <p class="title">Enter the phone number you want to spy on:</p>
+
+        <!-- Campo de entrada do número de telefone -->
+        <div class="phone-input-container">
+            <select id="countryCode">
+                <option value="+33" selected>🇫🇷 +33</option>
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+44">🇬🇧 +44</option>
+                <option value="+49">🇩🇪 +49</option>
+                <option value="+55">🇧🇷 +55</option>
+                <option value="+61">🇦🇺 +61</option>
+                <option value="+81">🇯🇵 +81</option>
+                <option value="+86">🇨🇳 +86</option>
+                <option value="+91">🇮🇳 +91</option>
+                <!-- Adicione mais opções de países aqui -->
+            </select>
+            <input type="tel" id="phoneNumber" placeholder="Phone number">
+        </div>
+
+        <!-- Botão de pesquisa -->
+        <button class="search-button" onclick="searchNumber()">SEARCH</button>
+
+        <!-- Ícones de sistemas operacionais -->
+        <div class="os-icons">
+            <div><i class="fab fa-android"></i> Android</div>
+            <div><i class="fab fa-apple"></i> iPhone</div>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <div class="footer">
+        <p>Privacy Policy - Terms of Use</p>
+        <p>EspionApp - Copyright 2024</p>
+    </div>
+
+    <script>
+        // Função para gerar um número aleatório dentro de um intervalo
+        function getRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Função para atualizar o número de "Active users now" a cada 3 a 5 segundos
+        function updateActiveUsers() {
+            const activeUsersElement = document.getElementById("activeUsers");
+
+            function update() {
+                const randomActiveUsers = getRandomNumber(2300, 2900);
+                activeUsersElement.innerHTML = `${randomActiveUsers}<br>Active users now`;
+                
+                // Define um novo intervalo aleatório entre 3 e 5 segundos
+                const randomInterval = getRandomNumber(3000, 5000);
+                setTimeout(update, randomInterval);
+            }
+            update();
+        }
+
+        // Função para definir o número inicial de "Devices spied on today"
+        function setInitialDevicesSpied() {
+            const devicesSpiedElement = document.getElementById("devicesSpied");
+            const randomDevicesSpied = getRandomNumber(2900, 3400);
+            devicesSpiedElement.innerHTML = `${randomDevicesSpied}<br>Devices spied on today`;
+        }
+
+        // Função para armazenar o número e redirecionar para a próxima página
+        function searchNumber() {
+            const countryCode = document.getElementById("countryCode").value;
+            const phoneNumber = document.getElementById("phoneNumber").value;
+            const fullNumber = countryCode + phoneNumber;
+
+            // Armazena o número completo em uma variável ou envia para a próxima página
+            localStorage.setItem("spyPhoneNumber", fullNumber); // Armazena o número no localStorage
+
+            // Redireciona para a página principal
+            window.location.href = "homepage/index.html"; // Substitua com o caminho correto para a página principal
+        }
+
+        // Chama as funções ao carregar a página
+        setInitialDevicesSpied();
+        updateActiveUsers();
+    </script>
+
+</body>
+</html>

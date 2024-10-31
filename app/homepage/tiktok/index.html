@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EspionApp - TikTok</title>
+    
+    <!-- Link para a biblioteca de ícones Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1c1c1c;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: filter 0.3s ease;
+        }
+
+        /* Cabeçalho */
+        .header {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #333;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .header img {
+            height: 40px;
+        }
+
+        /* Container principal */
+        .main-container {
+            width: 90%;
+            max-width: 600px;
+            border: 2px solid #FF0000;
+            background-color: #000000;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+
+        /* Ícone do TikTok */
+        .tiktok-icon {
+            font-size: 50px;
+            color: #69C9D0; /* Cor do ícone do TikTok */
+            margin-bottom: 10px;
+        }
+
+        /* Barra de progresso */
+        .progress-bar-container {
+            width: 100%;
+            background-color: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+
+        .progress-text {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        /* Estilos para as etapas */
+        .steps {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+            opacity: 0; /* Inicialmente invisível */
+            transition: opacity 0.3s ease;
+        }
+
+        .step i {
+            color: #4CAF50;
+            margin-right: 10px;
+        }
+
+        .last-step i {
+            color: #FFA500; /* Cor laranja para o ícone de tempo */
+        }
+
+        /* Estilo para o campo de e-mail e botão */
+        .email-container {
+            display: none; /* Inicialmente invisível */
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .email-container input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .email-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* Mensagem de confirmação */
+        .confirmation-message {
+            margin-top: 10px;
+            color: #4CAF50;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cabeçalho com SORTIR e logo -->
+    <div class="header">
+        <a onclick="goToHomePage()"><i class="fas fa-arrow-left"></i> SORTIR</a>
+        <img src="../images/logo.jpg" alt="Logo EspionApp">
+    </div>
+
+    <!-- Container principal -->
+    <div class="main-container">
+        <div class="tiktok-icon"><i class="fab fa-tiktok"></i></div>
+        <p>Le numéro est espionné</p>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">0%</div>
+
+        <!-- Etapas -->
+        <div class="steps">
+            <div class="step" id="step1"><i class="fas fa-check-circle"></i> Connexion à TikTok</div>
+            <div class="step" id="step2"><i class="fas fa-check-circle"></i> Recherche de vulnérabilité</div>
+            <div class="step" id="step3"><i class="fas fa-check-circle"></i> Vulnérabilité trouvée</div>
+            <div class="step" id="step4"><i class="fas fa-check-circle"></i> Décryptage des informations</div>
+            <div class="step" id="step5"><i class="fas fa-check-circle"></i> Obtenir des vidéos, des conversations, des commentaires et des abonnés</div>
+            <div class="step last-step" id="step6"><i class="fas fa-clock"></i> Il sera disponible dans 2 heures</div>
+        </div>
+
+        <!-- Campo de e-mail e botão -->
+        <div class="email-container" id="emailContainer">
+            <input type="email" placeholder="Votre adresse email" required>
+            <button onclick="saveEmail()">SAUVEGARDER</button>
+            <div class="confirmation-message" id="confirmationMessage" style="display: none;">
+                Enregistré avec succès.<br> Dans les 4 heures, vous recevrez l'e-mail.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para redirecionar para a página inicial
+        function goToHomePage() {
+            window.location.href = "../index.html";
+        }
+
+        // Função para iniciar a barra de progresso e exibir as etapas
+        function startProgressBar() {
+            const progressBar = document.getElementById("progressBar");
+            const progressText = document.getElementById("progressText");
+            const steps = [
+                document.getElementById("step1"),
+                document.getElementById("step2"),
+                document.getElementById("step3"),
+                document.getElementById("step4"),
+                document.getElementById("step5"),
+                document.getElementById("step6")
+            ];
+            const stepAppearances = [2, 10, 25, 50, 85, 100]; // Momentos para cada etapa aparecer
+            const emailContainer = document.getElementById("emailContainer");
+
+            let progress = 0;
+            let currentStep = 0;
+
+            const interval = setInterval(() => {
+                if (progress >= 100) {
+                    clearInterval(interval);
+                } else {
+                    progress++;
+                    progressBar.style.width = progress + "%";
+                    progressText.innerText = progress + "%";
+
+                    // Mostrar a próxima etapa conforme a barra avança, com base nos momentos de stepAppearances
+                    if (currentStep < steps.length && progress >= stepAppearances[currentStep]) {
+                        steps[currentStep].style.opacity = 1; // Torna a etapa visível
+                        currentStep++;
+
+                        // Exibe o campo de e-mail 1.5s após o último step aparecer
+                        if (currentStep === steps.length) {
+                            setTimeout(() => {
+                                emailContainer.style.display = "block";
+                            }, 1500);
+                        }
+                    }
+                }
+            }, 50); // Ajuste de velocidade da barra de progresso
+        }
+
+        // Função para exibir a mensagem de confirmação após clicar em SAUVEGARDER
+        function saveEmail() {
+            const confirmationMessage = document.getElementById("confirmationMessage");
+            confirmationMessage.style.display = "block";
+        }
+
+        // Espera 0.5s antes de iniciar a barra de progresso
+        setTimeout(startProgressBar, 500);
+    </script>
+
+</body>
+</html>
